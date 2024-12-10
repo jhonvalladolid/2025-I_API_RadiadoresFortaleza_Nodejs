@@ -10,7 +10,11 @@ const app = express();
 app.use(express.json());
 
 // Middleware para permitir CORS (Cross-Origin Resource Sharing)
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://192.168.10.107'], // Asegúrate de usar tu IP local
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
+}));
 
 // Middleware para registrar solicitudes HTTP en la consola
 app.use(morgan('dev'));

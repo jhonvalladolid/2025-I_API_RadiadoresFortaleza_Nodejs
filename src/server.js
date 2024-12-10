@@ -6,8 +6,9 @@ const initModels = require('./models/initModels'); // Importar archivo de relaci
 // Cargar variables de entorno
 loadEnv();
 
-// Configurar el puerto del servidor
+// Configurar el puerto y host del servidor
 const PORT = process.env.PORT || 3000;
+const HOST = '0.0.0.0'; // Escuchar en todas las interfaces
 
 // Inicializar modelos y registrar relaciones
 initModels(); // Registrar relaciones entre los modelos
@@ -24,8 +25,8 @@ initModels(); // Registrar relaciones entre los modelos
     console.log('✅ Modelos sincronizados con la base de datos.');
 
     // Iniciar el servidor
-    app.listen(PORT, () => {
-      console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    app.listen(PORT, HOST, () => {
+      console.log(`Servidor corriendo en http://${HOST}:${PORT}`);
     });
   } catch (error) {
     // Manejo de errores en la conexión a la base de datos

@@ -1,24 +1,10 @@
 const { DataTypes } = require('sequelize');
-const db = require('../database/db'); // Instancia de Sequelize
+const sequelizeDB = require('../database/database');
 
-const Role = db.define('Role', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  description: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-}, {
-  tableName: 'roles',
-  timestamps: true,
-});
+const Role = sequelizeDB.define('Role', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  name: { type: DataTypes.STRING, allowNull: false, unique: true },
+  description: { type: DataTypes.STRING, allowNull: true }
+}, {  tableName: 'roles',  timestamps: true });
 
 module.exports = Role;

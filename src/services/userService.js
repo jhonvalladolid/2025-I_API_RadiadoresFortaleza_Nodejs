@@ -4,7 +4,7 @@ const Role = require('../models/roleModel'); // Importar el modelo Role para inc
 exports.getAllUsers = async () => {
   // Obtener todos los usuarios con su rol asociado
   return await User.findAll({
-    include: { model: Role, as: 'role' }, // Incluir el rol asociado
+    include: { model: Role}, // Incluir el rol asociado
   });
 };
 
@@ -28,7 +28,7 @@ exports.createUser = async (data) => {
 exports.getUserById = async (id) => {
   // Obtener un usuario por ID con su rol asociado
   const user = await User.findByPk(id, {
-    include: { model: Role, as: 'role' }, // Incluir el rol asociado
+    include: { model: Role}, // Incluir el rol asociado
   });
   if (!user) throw new Error('User not found');
   return user;

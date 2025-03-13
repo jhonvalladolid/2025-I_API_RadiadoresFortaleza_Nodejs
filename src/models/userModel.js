@@ -1,32 +1,17 @@
 const { DataTypes } = require('sequelize');
-const db = require('../database/db'); // Instancia de Sequelize
+const sequelizeDB = require('../database/database');
+const Role = require('./roleModel');
 
-const User = db.define('User', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  roleId: {
-    type: DataTypes.UUID,
-    allowNull: false,
-  },
-}, {
-  tableName: 'users',
-  timestamps: true,
-});
+const User = sequelizeDB.define('User', {
+  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  firstName: { type: DataTypes.STRING, allowNull: false },
+  lastName: { type: DataTypes.STRING, allowNull: false },
+  email: { type: DataTypes.STRING, allowNull: false, unique: true },
+  password: { type: DataTypes.STRING },
+  provider: { type: DataTypes.STRING, allowNull: false, defaultValue: 'local' },
+}, { tableName: 'users', timestamps: true });
+
+// Relación: Un usuario pertenece a un rol
+User.belongsTo(Role, { foreignKey: 'roleId' });
 
 module.exports = User;

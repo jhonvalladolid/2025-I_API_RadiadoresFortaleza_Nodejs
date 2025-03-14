@@ -4,7 +4,6 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roleRoutes = require('./routes/roleRoutes');
-const userRoutesTemp = require('./routes/userRoutesTemp');
 
 const app = express();
 

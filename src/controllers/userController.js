@@ -1,47 +1,58 @@
 const userService = require('../services/userService');
 
-exports.getUsers = async (req, res) => {
+// Asignar rol a usuario
+const assignRole = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const { userId, roleName } = req.body;
+    const updatedUser = await userService.assignUserRole(userId, roleName);
+    return res.json({ message: 'Rol asignado exitosamente', user: updatedUser });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };
 
-exports.createUser = async (req, res) => {
+// Obtener datos del usuario autenticado
+const getUserProfile = async (req, res) => {
   try {
-    const user = await userService.createUser(req.body);
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    const user = await userService.findUserById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    return res.json({ message: 'Datos de usuario obtenidos', user });
+  } catch (err) {
+    return res.status(500).json({ error: 'Error obteniendo usuario' });
   }
 };
 
-exports.getUser = async (req, res) => {
+// **Permitir que un usuario autenticado agregue una contraseña si no la tiene**
+const setPassword = async (req, res) => {
   try {
-    const user = await userService.getUserById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    const { password } = req.body;
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: 'Acceso no autorizado' });
+    }
+
+    const response = await userService.setUserPassword(req.user.id, password);
+    return res.json(response);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };
 
-exports.updateUser = async (req, res) => {
+// **Permitir que un usuario autenticado cambie su contraseña**
+const changePassword = async (req, res) => {
   try {
-    const updatedUser = await userService.updateUser(req.params.id, req.body);
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    const { oldPassword, newPassword } = req.body;
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: 'Acceso no autorizado' });
+    }
+
+    const response = await userService.changeUserPassword(req.user.id, oldPassword, newPassword);
+    return res.json(response);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };
 
-exports.deleteUser = async (req, res) => {
-  try {
-    await userService.deleteUser(req.params.id);
-    res.status(204).send();
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+module.exports = { assignRole, getUserProfile, setPassword, changePassword };

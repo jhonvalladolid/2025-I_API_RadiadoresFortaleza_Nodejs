@@ -1,49 +1,66 @@
-const User = require('../models/userModel'); // Importar el modelo User
-const Role = require('../models/roleModel'); // Importar el modelo Role para incluir la relación
+const bcrypt = require('bcryptjs');
+const User = require('../models/userModel');
+const Role = require('../models/roleModel');
 
-exports.getAllUsers = async () => {
-  // Obtener todos los usuarios con su rol asociado
-  return await User.findAll({
-    include: { model: Role}, // Incluir el rol asociado
+// Obtener usuario por ID
+const findUserById = async (userId) => {
+  return await User.findOne({
+    where: { id: userId },
+    include: Role,
+    attributes: ['id', 'firstName', 'lastName', 'email', 'roleId']
   });
 };
 
-exports.createUser = async (data) => {
-  // Verificar si el rol está definido en los datos
-  if (!data.roleId) {
-    // Buscar el rol predeterminado "user"
-    const defaultRole = await Role.findOne({ where: { name: 'user' } });
-    if (!defaultRole) {
-      throw new Error('Default role "user" not found in the database.');
-    }
-
-    // Asignar el rol predeterminado
-    data.roleId = defaultRole.id;
-  }
-
-  // Crear el usuario con el rol asignado
-  return await User.create(data);
-};
-
-exports.getUserById = async (id) => {
-  // Obtener un usuario por ID con su rol asociado
-  const user = await User.findByPk(id, {
-    include: { model: Role}, // Incluir el rol asociado
+// Obtener usuario por Email (Solo para autenticación)
+const findUserByEmail = async (email) => {
+  return await User.findOne({
+    where: { email },
+    include: Role,
+    attributes: ['id', 'firstName', 'lastName', 'email', 'roleId', 'password']
   });
-  if (!user) throw new Error('User not found');
-  return user;
 };
 
-exports.updateUser = async (id, data) => {
-  // Actualizar un usuario existente
-  const user = await User.findByPk(id);
-  if (!user) throw new Error('User not found');
-  return await user.update(data);
+// Asignar rol a un usuario
+const assignUserRole = async (userId, roleName) => {
+  const user = await User.findOne({ where: { id: userId } });
+  if (!user) throw new Error('Usuario no encontrado');
+
+  const role = await Role.findOne({ where: { name: roleName } });
+  if (!role) throw new Error('Rol no válido');
+
+  user.roleId = role.id;
+  await user.save();
+
+  return await findUserById(userId);
 };
 
-exports.deleteUser = async (id) => {
-  // Eliminar un usuario por ID
-  const user = await User.findByPk(id);
-  if (!user) throw new Error('User not found');
-  return await user.destroy();
+// **Permitir a usuarios autenticados agregar una contraseña (si no tienen una)**
+const setUserPassword = async (userId, newPassword) => {
+  const user = await User.findOne({ where: { id: userId } });
+  if (!user) throw new Error('Usuario no encontrado');
+
+  if (user.password) throw new Error('Este usuario ya tiene una contraseña. Usa "changePassword" para cambiarla.');
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  await user.update({ password: hashedPassword });
+
+  return { message: 'Contraseña configurada exitosamente.' };
 };
+
+// **Permitir a usuarios autenticados cambiar su contraseña**
+const changeUserPassword = async (userId, oldPassword, newPassword) => {
+  const user = await User.findOne({ where: { id: userId } });
+  if (!user) throw new Error('Usuario no encontrado');
+
+  if (!user.password) throw new Error('Este usuario no tiene una contraseña configurada. Usa "setPassword" primero.');
+
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) throw new Error('La contraseña actual es incorrecta.');
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  await user.update({ password: hashedPassword });
+
+  return { message: 'Contraseña cambiada exitosamente.' };
+};
+
+module.exports = { findUserById, findUserByEmail, assignUserRole, setUserPassword, changeUserPassword };

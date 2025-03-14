@@ -2,12 +2,12 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const Role = require('../models/roleModel');
 
-// Obtener usuario por ID
+// Obtener usuario por ID (Sin exponer la contraseña)
 const findUserById = async (userId) => {
   return await User.findOne({
     where: { id: userId },
     include: Role,
-    attributes: ['id', 'firstName', 'lastName', 'email', 'roleId']
+    attributes: ['id', 'firstName', 'lastName', 'email', 'roleId'] // 🔹 Sin password
   });
 };
 
@@ -16,7 +16,7 @@ const findUserByEmail = async (email) => {
   return await User.findOne({
     where: { email },
     include: Role,
-    attributes: ['id', 'firstName', 'lastName', 'email', 'roleId', 'password']
+    attributes: ['id', 'firstName', 'lastName', 'email', 'roleId', 'password'] // ⚠️ Se usa solo en autenticación
   });
 };
 
@@ -34,7 +34,7 @@ const assignUserRole = async (userId, roleName) => {
   return await findUserById(userId);
 };
 
-// **Permitir a usuarios autenticados agregar una contraseña (si no tienen una)**
+// Permitir a usuarios autenticados agregar una contraseña (si no tienen una)
 const setUserPassword = async (userId, newPassword) => {
   const user = await User.findOne({ where: { id: userId } });
   if (!user) throw new Error('Usuario no encontrado');
@@ -47,7 +47,7 @@ const setUserPassword = async (userId, newPassword) => {
   return { message: 'Contraseña configurada exitosamente.' };
 };
 
-// **Permitir a usuarios autenticados cambiar su contraseña**
+// Permitir a usuarios autenticados cambiar su contraseña
 const changeUserPassword = async (userId, oldPassword, newPassword) => {
   const user = await User.findOne({ where: { id: userId } });
   if (!user) throw new Error('Usuario no encontrado');
@@ -63,4 +63,16 @@ const changeUserPassword = async (userId, oldPassword, newPassword) => {
   return { message: 'Contraseña cambiada exitosamente.' };
 };
 
-module.exports = { findUserById, findUserByEmail, assignUserRole, setUserPassword, changeUserPassword };
+// Actualizar perfil del usuario autenticado
+const updateUserProfile = async (userId, firstName, lastName) => {
+  const user = await User.findOne({ where: { id: userId } });
+  if (!user) throw new Error('Usuario no encontrado');
+
+  user.firstName = firstName || user.firstName;
+  user.lastName = lastName || user.lastName;
+  await user.save();
+
+  return await findUserById(userId);
+};
+
+module.exports = { findUserById, findUserByEmail, assignUserRole, setUserPassword, changeUserPassword, updateUserProfile };

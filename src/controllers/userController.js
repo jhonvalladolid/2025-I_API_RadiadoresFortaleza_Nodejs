@@ -23,7 +23,7 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-// **Permitir que un usuario autenticado agregue una contraseña si no la tiene**
+// Permitir que un usuario autenticado agregue una contraseña si no la tiene
 const setPassword = async (req, res) => {
   try {
     const { password } = req.body;
@@ -39,7 +39,7 @@ const setPassword = async (req, res) => {
   }
 };
 
-// **Permitir que un usuario autenticado cambie su contraseña**
+// Permitir que un usuario autenticado cambie su contraseña
 const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -55,4 +55,20 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { assignRole, getUserProfile, setPassword, changePassword };
+// Permitir que un usuario autenticado actualice su perfil
+const updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName } = req.body;
+
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ error: 'Acceso no autorizado' });
+    }
+
+    const updatedUser = await userService.updateUserProfile(req.user.id, firstName, lastName);
+    return res.json({ message: 'Perfil actualizado correctamente', user: updatedUser });
+  } catch (err) {
+    return res.status(500).json({ error: 'Error al actualizar perfil' });
+  }
+};
+
+module.exports = { assignRole, getUserProfile, setPassword, changePassword, updateProfile };

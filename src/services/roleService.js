@@ -1,32 +1,33 @@
-const Role = require('../models/roleModel'); // Importar el modelo Role
+const Role = require('../models/roleModel');
 
-exports.getAllRoles = async () => {
-  // Obtener todos los roles
+// Obtener todos los roles
+const getAllRoles = async () => {
   return await Role.findAll();
 };
 
-exports.createRole = async (data) => {
-  // Crear un nuevo rol
-  return await Role.create(data);
-};
-
-exports.getRoleById = async (id) => {
-  // Obtener un rol por ID
-  const role = await Role.findByPk(id);
-  if (!role) throw new Error('Role not found');
+// Obtener un rol por ID
+const getRoleById = async (roleId) => {
+  const role = await Role.findOne({ where: { id: roleId } });
+  if (!role) throw new Error('Rol no encontrado');
   return role;
 };
 
-exports.updateRole = async (id, data) => {
-  // Actualizar un rol existente
-  const role = await Role.findByPk(id);
-  if (!role) throw new Error('Role not found');
-  return await role.update(data);
+// Crear un nuevo rol
+const createRole = async (roleData) => {
+  return await Role.create(roleData);
 };
 
-exports.deleteRole = async (id) => {
-  // Eliminar un rol por ID
-  const role = await Role.findByPk(id);
-  if (!role) throw new Error('Role not found');
-  return await role.destroy();
+// Actualizar un rol existente
+const updateRole = async (roleId, roleData) => {
+  const role = await getRoleById(roleId);
+  await role.update(roleData);
+  return role;
 };
+
+// Eliminar un rol
+const deleteRole = async (roleId) => {
+  const role = await getRoleById(roleId);
+  await role.destroy();
+};
+
+module.exports = { getAllRoles, getRoleById, createRole, updateRole, deleteRole };

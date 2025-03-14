@@ -28,12 +28,7 @@ const HOST = '0.0.0.0'; // Escuchar en todas las interfaces
       console.log(`🚀 Servidor corriendo en http://${HOST}:${PORT}`);
     });
   } catch (error) {
-    // Manejo de errores en la conexión a la base de datos
-    if (error.name === 'SequelizeConnectionError') {
-      console.error('❌ Error de conexión a la base de datos:', error.message);
-    } else {
-      console.error('❌ Error inesperado:', error.message);
-    }
-    process.exit(1); // Detener la aplicación en caso de error crítico
+    console.error('❌ Error al iniciar el servidor:', error.message);
+    process.exit(1); // Cierra la aplicación en caso de error crítico
   }
 })();

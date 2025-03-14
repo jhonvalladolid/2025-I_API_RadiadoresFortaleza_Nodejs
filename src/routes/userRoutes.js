@@ -20,10 +20,13 @@ router.post('/assign-role', authenticateToken, checkRole(['admin']), userControl
 // Ruta para obtener los datos del usuario autenticado
 router.get('/user-info', authenticateToken, userController.getUserProfile);
 
-// **Ruta para agregar una contraseña si el usuario no tiene una**
+// Ruta para agregar una contraseña si el usuario no tiene una
 router.post('/set-password', authenticateToken, userController.setPassword);
 
-// **Ruta para cambiar la contraseña si el usuario ya tiene una**
+// Ruta para cambiar la contraseña si el usuario ya tiene una
 router.post('/change-password', authenticateToken, userController.changePassword);
+
+// Ruta para actualizar perfil del usuario autenticado
+router.put('/update-profile', authenticateToken, userController.updateProfile);
 
 module.exports = router;

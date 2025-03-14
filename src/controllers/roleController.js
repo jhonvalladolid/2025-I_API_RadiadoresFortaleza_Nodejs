@@ -1,43 +1,47 @@
 const roleService = require('../services/roleService');
 
-exports.getRoles = async (req, res) => {
+// Obtener todos los roles
+const getRoles = async (req, res) => {
   try {
     const roles = await roleService.getAllRoles();
-    res.status(200).json(roles);
+    res.json(roles);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-exports.createRole = async (req, res) => {
-  try {
-    const role = await roleService.createRole(req.body);
-    res.status(201).json(role);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-exports.getRole = async (req, res) => {
+// Obtener un rol por ID
+const getRole = async (req, res) => {
   try {
     const role = await roleService.getRoleById(req.params.id);
-    if (!role) return res.status(404).json({ error: 'Role not found' });
-    res.status(200).json(role);
+    res.json(role);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(404).json({ error: error.message });
   }
 };
 
-exports.updateRole = async (req, res) => {
+// Crear un nuevo rol
+const createRole = async (req, res) => {
   try {
-    const updatedRole = await roleService.updateRole(req.params.id, req.body);
-    res.status(200).json(updatedRole);
+    const role = await roleService.createRole(req.body);
+    res.status(201).json({ message: 'Rol creado exitosamente', role });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-exports.deleteRole = async (req, res) => {
+// Actualizar un rol existente
+const updateRole = async (req, res) => {
+  try {
+    const updatedRole = await roleService.updateRole(req.params.id, req.body);
+    res.json({ message: 'Rol actualizado exitosamente', role: updatedRole });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Eliminar un rol
+const deleteRole = async (req, res) => {
   try {
     await roleService.deleteRole(req.params.id);
     res.status(204).send();
@@ -45,3 +49,5 @@ exports.deleteRole = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+module.exports = { getRoles, getRole, createRole, updateRole, deleteRole };

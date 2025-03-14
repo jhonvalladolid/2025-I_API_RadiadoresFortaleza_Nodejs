@@ -1,8 +1,10 @@
 const express = require('express');
-const cors = require('cors');
 const morgan = require('morgan');
-const roleRoutes = require('./routes/roleRoutes');
+const cors = require('cors');
+const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const roleRoutes = require('./routes/roleRoutes');
+const userRoutesTemp = require('./routes/userRoutesTemp');
 
 const app = express();
 
@@ -19,13 +21,19 @@ app.use(cors({
 // Middleware para registrar solicitudes HTTP en la consola
 app.use(morgan('dev'));
 
-// Rutas principales
-app.use('/api/roles', roleRoutes); // Rutas relacionadas con roles
-app.use('/api/users', userRoutes); // Rutas relacionadas con usuarios
-
-// Ruta raíz para verificar el funcionamiento del servidor
+// Rutas públicas
+app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Servidor funcionando correctamente 🚀' });
+});
+
+// Rutas protegidas
+app.use('/api/protected', userRoutes);
+
+// Manejo de errores
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Algo salió mal en el servidor' });
 });
 
 module.exports = app;

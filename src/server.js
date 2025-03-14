@@ -21,7 +21,12 @@ const HOST = '0.0.0.0'; // Escuchar en todas las interfaces
       await Role.findOrCreate({ where: { name: roleName } });
     }
 
-    console.log('Roles iniciales creados correctamente.');
+    console.log('✅ Roles iniciales asegurados.');
+
+    // Iniciar el servidor
+    app.listen(PORT, HOST, () => {
+      console.log(`🚀 Servidor corriendo en http://${HOST}:${PORT}`);
+    });
   } catch (error) {
     // Manejo de errores en la conexión a la base de datos
     if (error.name === 'SequelizeConnectionError') {
@@ -32,8 +37,3 @@ const HOST = '0.0.0.0'; // Escuchar en todas las interfaces
     process.exit(1); // Detener la aplicación en caso de error crítico
   }
 })();
-
-// Iniciar el servidor
-app.listen(PORT, HOST, () => {
-  console.log(`Servidor corriendo en http://${HOST}:${PORT}`);
-});

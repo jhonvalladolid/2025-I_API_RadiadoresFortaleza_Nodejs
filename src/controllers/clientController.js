@@ -2,12 +2,18 @@ const clientService = require('../services/clientService');
 
 const getClientes = async (req, res) => {
   try {
-    const { identificacion = null, razon_social = null } = req.query;
+    const {
+      codigo = null,
+      identificacion = null,
+      razon_social = null
+    } = req.query;
 
-    const clientes = await clientService.listClientes(identificacion, razon_social);
+    const clientes = await clientService.listClientes(codigo, identificacion, razon_social);
 
     if (!clientes.length) {
-      return res.status(404).json({ message: 'No se encontraron clientes con los criterios proporcionados' });
+      return res.status(404).json({
+        message: 'No se encontraron clientes con los criterios proporcionados'
+      });
     }
 
     res.status(200).json({ clientes });

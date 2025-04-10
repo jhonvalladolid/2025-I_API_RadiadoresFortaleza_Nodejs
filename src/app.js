@@ -6,6 +6,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roleRoutes = require('./routes/roleRoutes');
+const clientRoutes = require('./routes/clientRoutes');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.get('/', (req, res) => {
 // Rutas protegidas
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes); // 🔹 Se agregan las rutas de roles
+app.use('/api/clientes', clientRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res, next) => {

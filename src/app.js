@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
 
 // Rutas protegidas
 app.use('/api/users', userRoutes);
-app.use('/api/roles', roleRoutes); // 🔹 Se agregan las rutas de roles
+app.use('/api/roles', roleRoutes);
 app.use('/api/clientes', clientRoutes);
 app.use('/api/ubicaciones', ubicacionRoutes);
 

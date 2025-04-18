@@ -1,13 +1,15 @@
 const pool = require('../database/poolDB');
 
-const listClientes = async (codigo = null, nro_dni = null, razonSocial = null) => {
+const listClientes = async (opc = 'all', texto = null, estado = null, limit = 100, offset = 0) => {
   try {
     const result = await pool.query(
-      'SELECT * FROM sp_movil_clientes_listado($1, $2, $3)',
+      'SELECT * FROM sp_movil_clientes_listado($1, $2, $3, $4, $5)',
       [
-        codigo?.trim() || null,
-        nro_dni?.trim() || null,
-        razonSocial?.trim() || null
+        opc?.trim() || 'all',
+        texto?.trim() || null,
+        estado?.trim() || null,
+        limit,
+        offset
       ]
     );
     return result.rows;
